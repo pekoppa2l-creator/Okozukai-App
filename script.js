@@ -1,20 +1,75 @@
 // はじまりの お金（1000円もっていることにするよ）
 let currentDate = new Date();
 let currentMonth = currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0');
-let monthlyBalances = JSON.parse(localStorage.getItem('monthlyBalances')) || {};
-let balance = monthlyBalances[currentMonth] || 1000;
+let monthlyBalances = {};
+let balance = 1000;
 let currentPrice = 0;
 let currentItem = "";
-let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+let transactions = [];
+let currentUser = localStorage.getItem('selectedUser') || '';
+
+const userProfiles = {
+    karin: { name: 'かりん', icon: '👧' },
+    ao: { name: 'あお', icon: '👦' }
+};
 
 const balanceDisplay = document.getElementById('balance');
 const quizArea = document.getElementById('quiz-area');
+
+function getUserStorageKey(baseKey) {
+    return `${baseKey}_${currentUser}`;
+}
+
+function loadUserData() {
+    monthlyBalances = JSON.parse(localStorage.getItem(getUserStorageKey('monthlyBalances'))) || {};
+    transactions = JSON.parse(localStorage.getItem(getUserStorageKey('transactions'))) || [];
+    balance = monthlyBalances[currentMonth] || 1000;
+}
+
+function updateCurrentUserDisplay() {
+    const display = document.getElementById('current-user-display');
+    if (!userProfiles[currentUser]) {
+        display.innerText = '';
+        return;
+    }
+    display.innerText = `${userProfiles[currentUser].icon} ${userProfiles[currentUser].name}`;
+}
+
+function applyUserTheme() {
+    document.body.classList.remove('user-karin', 'user-ao');
+    if (currentUser === 'karin') {
+        document.body.classList.add('user-karin');
+    }
+    if (currentUser === 'ao') {
+        document.body.classList.add('user-ao');
+    }
+}
+
+function selectUser(userId) {
+    currentUser = userId;
+    localStorage.setItem('selectedUser', currentUser);
+    applyUserTheme();
+    document.getElementById('user-select-screen').classList.add('hidden');
+    document.getElementById('app-container').classList.remove('hidden');
+    updateCurrentUserDisplay();
+    loadUserData();
+    updateDisplay();
+    renderHistoryList();
+}
+
+function switchUser() {
+    closeBonusModal();
+    closeQuiz();
+    document.getElementById('history-area').classList.add('hidden');
+    document.getElementById('app-container').classList.add('hidden');
+    document.getElementById('user-select-screen').classList.remove('hidden');
+}
 
 // 画面を更新する
 function updateDisplay() {
     balanceDisplay.innerText = balance;
     monthlyBalances[currentMonth] = balance;
-    localStorage.setItem('monthlyBalances', JSON.stringify(monthlyBalances));
+    localStorage.setItem(getUserStorageKey('monthlyBalances'), JSON.stringify(monthlyBalances));
     updateDateDisplay();
 }
 
@@ -156,7 +211,7 @@ function addHistory(text) {
     };
     
     transactions.unshift(transaction);
-    localStorage.setItem('transactions', JSON.stringify(transactions));
+    localStorage.setItem(getUserStorageKey('transactions'), JSON.stringify(transactions));
     
     renderHistoryList();
 }
@@ -197,5 +252,12 @@ function renderHistoryList() {
 }
 
 // さいしょに画面を表示する
-updateDisplay();
-renderHistoryList();
+if (currentUser && userProfiles[currentUser]) {
+    document.getElementById('user-select-screen').classList.add('hidden');
+    document.getElementById('app-container').classList.remove('hidden');
+    applyUserTheme();
+    updateCurrentUserDisplay();
+    loadUserData();
+    updateDisplay();
+    renderHistoryList();
+}

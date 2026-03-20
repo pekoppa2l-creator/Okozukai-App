@@ -29,6 +29,106 @@ body {
     text-align: center;
 }
 
+.user-select-screen {
+    margin-top: 40px;
+}
+
+.select-subtext {
+    color: #666;
+    margin-top: 0;
+    margin-bottom: 20px;
+}
+
+.user-card-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.user-card {
+    border-radius: 16px;
+    padding: 18px 10px;
+    margin: 0;
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.user-card.karin {
+    background: linear-gradient(135deg, #ff8ab3 0%, #ffb3ce 100%);
+}
+
+.user-card.ao {
+    background: linear-gradient(135deg, #61a8ff 0%, #8cc4ff 100%);
+}
+
+.user-icon {
+    font-size: 42px;
+}
+
+.user-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.user-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.current-user-display {
+    font-size: 14px;
+    color: #555;
+    font-weight: 700;
+}
+
+.switch-user-btn {
+    width: auto;
+    margin: 0;
+    padding: 8px 10px;
+    font-size: 12px;
+    border-radius: 8px;
+    background: #6b7280;
+}
+
+body.user-ao .balance-card {
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+}
+
+body.user-ao .bonus-btn,
+body.user-ao .bonus-box button {
+    background: #2563eb;
+}
+
+body.user-ao .bonus-box button:hover {
+    background: #1d4ed8;
+}
+
+body.user-ao .image-button {
+    background: linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%);
+}
+
+body.user-karin .balance-card {
+    background: linear-gradient(135deg, #f472b6 0%, #ec4899 100%);
+}
+
+body.user-karin .bonus-btn,
+body.user-karin .bonus-box button {
+    background: #ec4899;
+}
+
+body.user-karin .bonus-box button:hover {
+    background: #db2777;
+}
+
+body.user-karin .image-button {
+    background: linear-gradient(135deg, #f9a8d4 0%, #ec4899 100%);
+}
+
 .balance-card {
     background: linear-gradient(135deg, #ffcc00 0%, #ffd700 100%);
     padding: 20px;

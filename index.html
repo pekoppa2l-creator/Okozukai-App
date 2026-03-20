@@ -6,7 +6,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
+    <div id="user-select-screen" class="container user-select-screen">
+        <h1>👨‍👩‍👧‍👦 だれが つかう？</h1>
+        <p class="select-subtext">つかうひとを えらんでね</p>
+        <div class="user-card-group">
+            <button class="user-card karin" onclick="selectUser('karin')">
+                <div class="user-icon">👧</div>
+                <div class="user-name">かりん</div>
+            </button>
+            <button class="user-card ao" onclick="selectUser('ao')">
+                <div class="user-icon">👦</div>
+                <div class="user-name">あお</div>
+            </button>
+        </div>
+    </div>
+
+    <div id="app-container" class="container hidden">
+        <div class="user-toolbar">
+            <div id="current-user-display" class="current-user-display"></div>
+            <button class="switch-user-btn" onclick="switchUser()">ユーザー変更</button>
+        </div>
         <h1>💰 おこづかいマスター</h1>
         <div id="date-display" class="date-display"></div>
         

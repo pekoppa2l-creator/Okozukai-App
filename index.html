@@ -24,7 +24,10 @@
     <div id="app-container" class="container hidden">
         <div class="user-toolbar">
             <div id="current-user-display" class="current-user-display"></div>
-            <button class="switch-user-btn" onclick="switchUser()">ユーザー変更</button>
+            <div class="toolbar-actions">
+                <button class="settings-btn" onclick="showSettingsModal()">せってい</button>
+                <button class="switch-user-btn" onclick="switchUser()">ユーザー変更</button>
+            </div>
         </div>
         <h1>💰 おこづかいマスター</h1>
         <div id="date-display" class="date-display"></div>
@@ -78,29 +81,7 @@
 
         <div class="actions">
             <h3>🛍️ なににつかう？</h3>
-            <div class="button-group">
-                <button class="image-button" onclick="askQuiz('シール', 100)">
-                    <div class="button-content">
-                        <div class="button-emoji">🏷️</div>
-                        <div class="button-name">シール</div>
-                        <div class="button-price">100円</div>
-                    </div>
-                </button>
-                <button class="image-button" onclick="askQuiz('ポケモン', 200)">
-                    <div class="button-content">
-                        <div class="button-emoji">🎮</div>
-                        <div class="button-name">ポケモン</div>
-                        <div class="button-price">200円</div>
-                    </div>
-                </button>
-                <button class="image-button" onclick="askQuiz('UFOキャッチャー', 100)">
-                    <div class="button-content">
-                        <div class="button-emoji">🎯</div>
-                        <div class="button-name">UFOキャッチャー</div>
-                        <div class="button-price">100円</div>
-                    </div>
-                </button>
-            </div>
+            <div class="button-group" id="spend-buttons"></div>
             
             <h3>✨ がんばった！</h3>
             <button class="bonus-btn" onclick="showBonusModal()">お手伝いボーナス (+50円)</button>
@@ -146,6 +127,35 @@
                     <button class="month-nav-btn" onclick="changeMonth(1)">次月 →</button>
                 </div>
                 <ul id="history-list"></ul>
+            </div>
+        </div>
+
+        <div id="settings-area" class="hidden">
+            <div class="settings-box">
+                <button class="back-btn" onclick="closeSettingsModal()">← もどる</button>
+                <h3>⚙️ せってい</h3>
+
+                <p>まいつきの はじめの おこづかい</p>
+                <input type="number" id="initial-budget" min="0" step="10">
+
+                <div class="settings-items">
+                    <h4>つかうボタン 1</h4>
+                    <input type="text" id="setting-icon-0" maxlength="4" placeholder="アイコン 例: 🏷️">
+                    <input type="text" id="setting-name-0" maxlength="20" placeholder="なまえ">
+                    <input type="number" id="setting-price-0" min="1" step="10" placeholder="ねだん">
+
+                    <h4>つかうボタン 2</h4>
+                    <input type="text" id="setting-icon-1" maxlength="4" placeholder="アイコン 例: 🎮">
+                    <input type="text" id="setting-name-1" maxlength="20" placeholder="なまえ">
+                    <input type="number" id="setting-price-1" min="1" step="10" placeholder="ねだん">
+
+                    <h4>つかうボタン 3</h4>
+                    <input type="text" id="setting-icon-2" maxlength="4" placeholder="アイコン 例: 🎯">
+                    <input type="text" id="setting-name-2" maxlength="20" placeholder="なまえ">
+                    <input type="number" id="setting-price-2" min="1" step="10" placeholder="ねだん">
+                </div>
+
+                <button onclick="saveSettings()">せっていを保存</button>
             </div>
         </div>
     </div>

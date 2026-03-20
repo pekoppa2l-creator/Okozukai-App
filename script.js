@@ -7,10 +7,20 @@ let currentPrice = 0;
 let currentItem = "";
 let transactions = [];
 let currentUser = localStorage.getItem('selectedUser') || '';
+let userSettings = null;
 
 const userProfiles = {
     karin: { name: 'かりん', icon: '👧' },
     ao: { name: 'あお', icon: '👦' }
+};
+
+const defaultSettings = {
+    initialBudget: 1000,
+    spendItems: [
+        { icon: '🏷️', name: 'シール', price: 100 },
+        { icon: '🎮', name: 'ポケモン', price: 200 },
+        { icon: '🎯', name: 'UFOキャッチャー', price: 100 }
+    ]
 };
 
 const balanceDisplay = document.getElementById('balance');
@@ -20,10 +30,59 @@ function getUserStorageKey(baseKey) {
     return `${baseKey}_${currentUser}`;
 }
 
+function getDefaultSettingsCopy() {
+    return JSON.parse(JSON.stringify(defaultSettings));
+}
+
+function loadUserSettings() {
+    const saved = JSON.parse(localStorage.getItem(getUserStorageKey('settings')));
+    if (!saved || !Array.isArray(saved.spendItems) || saved.spendItems.length !== 3) {
+        userSettings = getDefaultSettingsCopy();
+        saveUserSettings();
+        return;
+    }
+
+    userSettings = {
+        initialBudget: Number(saved.initialBudget) > 0 ? Number(saved.initialBudget) : 1000,
+        spendItems: saved.spendItems.map((item, idx) => ({
+            icon: item.icon || defaultSettings.spendItems[idx].icon,
+            name: item.name || defaultSettings.spendItems[idx].name,
+            price: Number(item.price) > 0 ? Number(item.price) : defaultSettings.spendItems[idx].price
+        }))
+    };
+}
+
+function saveUserSettings() {
+    localStorage.setItem(getUserStorageKey('settings'), JSON.stringify(userSettings));
+}
+
+function getInitialBudget() {
+    return userSettings && Number(userSettings.initialBudget) > 0 ? Number(userSettings.initialBudget) : 1000;
+}
+
+function renderSpendButtons() {
+    const container = document.getElementById('spend-buttons');
+    container.innerHTML = '';
+
+    userSettings.spendItems.forEach(item => {
+        const button = document.createElement('button');
+        button.className = 'image-button';
+        button.onclick = () => askQuiz(item.name, item.price);
+        button.innerHTML = `
+            <div class="button-content">
+                <div class="button-emoji">${item.icon}</div>
+                <div class="button-name">${item.name}</div>
+                <div class="button-price">${item.price}円</div>
+            </div>
+        `;
+        container.appendChild(button);
+    });
+}
+
 function loadUserData() {
     monthlyBalances = JSON.parse(localStorage.getItem(getUserStorageKey('monthlyBalances'))) || {};
     transactions = JSON.parse(localStorage.getItem(getUserStorageKey('transactions'))) || [];
-    balance = monthlyBalances[currentMonth] || 1000;
+    balance = monthlyBalances[currentMonth] || getInitialBudget();
 }
 
 function updateCurrentUserDisplay() {
@@ -49,6 +108,8 @@ function selectUser(userId) {
     currentUser = userId;
     localStorage.setItem('selectedUser', currentUser);
     applyUserTheme();
+    loadUserSettings();
+    renderSpendButtons();
     document.getElementById('user-select-screen').classList.add('hidden');
     document.getElementById('app-container').classList.remove('hidden');
     updateCurrentUserDisplay();
@@ -59,10 +120,74 @@ function selectUser(userId) {
 
 function switchUser() {
     closeBonusModal();
+    closeSettingsModal();
     closeQuiz();
     document.getElementById('history-area').classList.add('hidden');
     document.getElementById('app-container').classList.add('hidden');
     document.getElementById('user-select-screen').classList.remove('hidden');
+}
+
+function showSettingsModal() {
+    document.getElementById('initial-budget').value = userSettings.initialBudget;
+    userSettings.spendItems.forEach((item, idx) => {
+        document.getElementById(`setting-icon-${idx}`).value = item.icon;
+        document.getElementById(`setting-name-${idx}`).value = item.name;
+        document.getElementById(`setting-price-${idx}`).value = item.price;
+    });
+    document.getElementById('settings-area').classList.remove('hidden');
+}
+
+function closeSettingsModal() {
+    const settingsArea = document.getElementById('settings-area');
+    if (settingsArea) {
+        settingsArea.classList.add('hidden');
+    }
+}
+
+function saveSettings() {
+    const initialBudget = parseInt(document.getElementById('initial-budget').value);
+    if (isNaN(initialBudget) || initialBudget <= 0) {
+        alert('初期予算は1円以上で入力してください。');
+        return;
+    }
+
+    const nextItems = [];
+    for (let i = 0; i < 3; i++) {
+        const icon = document.getElementById(`setting-icon-${i}`).value.trim();
+        const name = document.getElementById(`setting-name-${i}`).value.trim();
+        const price = parseInt(document.getElementById(`setting-price-${i}`).value);
+
+        if (!name) {
+            alert(`つかうボタン ${i + 1} の なまえを入力してください。`);
+            return;
+        }
+        if (isNaN(price) || price <= 0) {
+            alert(`つかうボタン ${i + 1} の ねだんは1円以上で入力してください。`);
+            return;
+        }
+
+        nextItems.push({
+            icon: icon || defaultSettings.spendItems[i].icon,
+            name,
+            price
+        });
+    }
+
+    userSettings = {
+        initialBudget,
+        spendItems: nextItems
+    };
+
+    saveUserSettings();
+    renderSpendButtons();
+
+    if (!monthlyBalances[currentMonth]) {
+        balance = getInitialBudget();
+        updateDisplay();
+    }
+
+    closeSettingsModal();
+    alert('せっていを保存しました！');
 }
 
 // 画面を更新する
@@ -222,7 +347,7 @@ function changeMonth(offset) {
     const year = currentDate.getFullYear();
     const month = String(currentDate.getMonth() + 1).padStart(2, '0');
     currentMonth = year + '-' + month;
-    balance = monthlyBalances[currentMonth] || 1000;
+    balance = monthlyBalances[currentMonth] || getInitialBudget();
     
     updateDisplay();
     renderHistoryList();
@@ -256,6 +381,8 @@ if (currentUser && userProfiles[currentUser]) {
     document.getElementById('user-select-screen').classList.add('hidden');
     document.getElementById('app-container').classList.remove('hidden');
     applyUserTheme();
+    loadUserSettings();
+    renderSpendButtons();
     updateCurrentUserDisplay();
     loadUserData();
     updateDisplay();

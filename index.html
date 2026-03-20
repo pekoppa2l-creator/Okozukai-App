@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>おこづかいマスター</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>💰 おこづかいマスター</h1>
+        <div id="date-display" class="date-display"></div>
+        
+        <div class="balance-card">
+            <div class="piggy-bank-container" onclick="toggleHistory()">
+                <svg class="piggy-bank" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Piggy body (main round part) -->
+                <ellipse cx="100" cy="110" rx="55" ry="50" fill="#ff9ec5"/>
+                <ellipse cx="100" cy="110" rx="53" ry="48" fill="#ffb3d9" opacity="0.8"/>
+                
+                <!-- Head -->
+                <circle cx="145" cy="70" r="35" fill="#ff9ec5"/>
+                
+                <!-- Snout/nose -->
+                <ellipse cx="175" cy="75" rx="20" ry="18" fill="#ff7fa8"/>
+                <circle cx="170" cy="73" r="4" fill="#333"/>
+                <circle cx="180" cy="73" r="4" fill="#333"/>
+                
+                <!-- Ears -->
+                <ellipse cx="135" cy="35" rx="12" ry="22" fill="#ff9ec5"/>
+                <ellipse cx="155" cy="30" rx="12" ry="22" fill="#ff9ec5"/>
+                <ellipse cx="135" cy="38" rx="7" ry="15" fill="#ffb3d9"/>
+                <ellipse cx="155" cy="33" rx="7" ry="15" fill="#ffb3d9"/>
+                
+                <!-- Eyes -->
+                <circle cx="155" cy="58" r="5" fill="#333"/>
+                <circle cx="157" cy="56" r="2" fill="white"/>
+                
+                <!-- Legs -->
+                <rect x="70" y="150" width="14" height="35" rx="7" fill="#ff9ec5"/>
+                <rect x="105" y="155" width="14" height="30" rx="7" fill="#ff9ec5"/>
+                <rect x="125" y="150" width="14" height="35" rx="7" fill="#ff9ec5"/>
+                
+                <!-- Tail (curly) -->
+                <path d="M 50 100 Q 30 95 25 75" stroke="#ff9ec5" stroke-width="5" fill="none" stroke-linecap="round"/>
+                
+                <!-- Coin slot on top -->
+                <rect x="92" y="55" width="16" height="5" rx="2" fill="#8B7355"/>
+                <rect x="93" y="56" width="14" height="3" fill="#D4AF37"/>
+                
+                <!-- Coins inside (visible through body) -->
+                <circle cx="85" cy="115" r="6" fill="#FFD700" opacity="0.7"/>
+                <circle cx="102" cy="120" r="6" fill="#FFD700" opacity="0.7"/>
+                <circle cx="115" cy="112" r="6" fill="#FFD700" opacity="0.7"/>
+            </svg>
+            </div>
+            <p>いまの のこり</p>
+            <div id="balance">0</div><span>円</span>
+        </div>
+
+        <div class="actions">
+            <h3>🛍️ なににつかう？</h3>
+            <div class="button-group">
+                <button class="image-button" onclick="askQuiz('シール', 100)">
+                    <div class="button-content">
+                        <div class="button-emoji">🏷️</div>
+                        <div class="button-name">シール</div>
+                        <div class="button-price">100円</div>
+                    </div>
+                </button>
+                <button class="image-button" onclick="askQuiz('ポケモン', 200)">
+                    <div class="button-content">
+                        <div class="button-emoji">🎮</div>
+                        <div class="button-name">ポケモン</div>
+                        <div class="button-price">200円</div>
+                    </div>
+                </button>
+                <button class="image-button" onclick="askQuiz('UFOキャッチャー', 100)">
+                    <div class="button-content">
+                        <div class="button-emoji">🎯</div>
+                        <div class="button-name">UFOキャッチャー</div>
+                        <div class="button-price">100円</div>
+                    </div>
+                </button>
+            </div>
+            
+            <h3>✨ がんばった！</h3>
+            <button class="bonus-btn" onclick="showBonusModal()">お手伝いボーナス (+50円)</button>
+        </div>
+
+        <div id="bonus-quiz-area" class="hidden">
+            <div class="bonus-box">
+                <button class="back-btn" onclick="closeBonusModal()">← もどる</button>
+                <h3>🧠 ボーナスクイズ</h3>
+                <p id="bonus-quiz-question">?</p>
+                <input type="number" id="bonus-quiz-answer" placeholder="こたえを入力">
+                <button onclick="checkBonusQuiz()">こたえをかくにん</button>
+            </div>
+        </div>
+
+        <div id="bonus-area" class="hidden">
+            <div class="bonus-box">
+                <button class="back-btn" onclick="closeBonusModal()">← もどる</button>
+                <h3>🎉 ボーナスを追加！</h3>
+                <p>いくら ボーナスを もらったの？</p>
+                <input type="number" id="bonus-amount" placeholder="金額を入力" min="1" max="1000">
+                <p>どんなお手伝いをしたの？</p>
+                <input type="text" id="bonus-reason" placeholder="例: 部屋の掃除をした" maxlength="50">
+                <button onclick="confirmBonus()">ボーナスを追加！</button>
+            </div>
+        </div>
+
+        <div id="quiz-area" class="hidden">
+            <div class="quiz-box">
+                <button class="back-btn" onclick="closeQuiz()">← もどる</button>
+                <p id="quiz-question"></p>
+                <input type="number" id="quiz-answer" placeholder="こたえを入力">
+                <button onclick="checkAnswer()">こたえあわせ！</button>
+            </div>
+        </div>
+
+        <div id="history-area" class="history hidden">
+            <div class="history-box">
+                <button class="close-history-btn" onclick="toggleHistory()">×</button>
+                <div class="history-header">
+                    <button class="month-nav-btn" onclick="changeMonth(-1)">← 前月</button>
+                    <h3 id="history-month-display">きろく</h3>
+                    <button class="month-nav-btn" onclick="changeMonth(1)">次月 →</button>
+                </div>
+                <ul id="history-list"></ul>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

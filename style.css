@@ -266,6 +266,7 @@ button {
     width: 90%;
     max-width: 350px;
     position: relative;
+    overflow: visible;
 }
 
 .history > h3 {
@@ -343,8 +344,8 @@ button {
 
 .close-history-btn {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: -14px;
+    right: -14px;
     background: #ff5722 !important;
     color: white !important;
     border: none !important;
